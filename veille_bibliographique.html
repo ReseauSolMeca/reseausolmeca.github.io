@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ressources documentaire | Ressources</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Bibliothèque PapaParse pour lire le fichier CSV sans erreur de virgules/guillemets -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <img src="images/logo-rsm.png" alt="Logo RSM">
+    </div>
+
+    <nav>
+      <a href="#about">Le réseau</a>
+      <a href="#programme">Programme</a>
+      <a href="#actualites">Actualités</a>
+      <a href="#chantiers">Chantiers suivis</a>
+      <a href="veille_bibliographique.html" class="ressources-btn" target="_blank">Ressources</a>
+    </nav>
+  </header>
+
+  <!-- ACCUEIL -->
+  <div class="hero_biblio">
+    <div class="hero-content">
+      <div class="eyebrow">Ressources du réseau</div>
+      <h1>Veille bibliographique</h1>
+      <p>
+        Partage de la veille bibliographique réalisés par les chargés de R&D du réseau.
+      </p>
+    </div>
+    <div class="hero-copyright">Photo temporaire / A CHANGER</div>
+  </div>
+
+  <!-- THÉMATIQUE 01 : GUIDAGE DES ENGINS -->
+  <section class="documentation" id="guidage">
+    <div class="theme-heading">
+      <div class="section-label">Thématique 01</div>
+      <h2>Guidage des engins</h2>
+    </div>
+
+    <p class="theme-description">
+      Cette thématique regroupe les travaux relatifs aux
+      technologies de guidage et de géolocalisation des engins
+      forestiers, ainsi qu'aux solutions permettant de garantir
+      le respect des cloisonnements et des voies de circulation.
+    </p>
+
+    <div class="filters">
+      <span class="filter-tag">GPS</span>
+      <span class="filter-tag">Géolocalisation</span>
+      <span class="filter-tag">Cloisonnements</span>
+      <span class="filter-tag">Télémétrie</span>
+    </div>
+
+    <!-- Conteneur rempli automatiquement par le script -->
+    <div class="document-grid"></div>
+  </section>
+
+  <!-- THÉMATIQUE 02 : IMPACT AUX SOLS -->
+  <section class="documentation" id="impact_sol">
+    <div class="theme-heading">
+      <div class="section-label">Thématique 02</div>
+      <h2>Impact aux sols</h2>
+    </div>
+
+    <p class="theme-description">
+      Cette thématique regroupe les travaux relatifs à la compréhension des impacts aux sols générés par la circulation des engins en forêt.
+    </p>
+
+    <div class="filters">
+      <span class="filter-tag">Tassement</span>
+      <span class="filter-tag">Orniérage</span>
+    </div>
+
+    <!-- Conteneur rempli automatiquement par le script -->
+    <div class="document-grid"></div>
+  </section>
+
+  <p>PAGE EN CONSTRUCTION</p>
+
+  <!-- SCRIPT DE CHARGEMENT DU CSV -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      Papa.parse("articles.csv", {
+        download: true,
+        header: true,
+        delimiter: ";",
+        skipEmptyLines: true,
+        complete: function(results) {
+          results.data.forEach(article => {
+            // Cible la section correspondant à la colonne "thematique"
+            const section = document.getElementById(article.thematique?.trim());
+            if (!section) return;
+
+            const grid = section.querySelector(".document-grid");
+            if (!grid) return;
+
+            // Création de la carte HTML
+            const card = document.createElement("article");
+            card.className = "document-card";
+            
+            // Stockage des tags pour un éventuel filtrage futur
+            if (article.tags) {
+              card.dataset.tags = article.tags.toLowerCase();
+            }
+
+            card.innerHTML = `
+              <span class="doc-type">${article.type || "Document"}</span>
+              <h3>${article.titre || "Sans titre"}</h3>
+              <div class="doc-meta">${article.meta || ""}</div>
+              <p>${article.resume || ""}</p>
+              <a href="${article.lien || "#"}" class="doc-link" target="_blank" rel="noopener noreferrer">
+                ${article.texte_lien || "Consulter le document →"}
+              </a>
+            `;
+
+            grid.appendChild(card);
+          });
+        },
+        error: function(err) {
+          console.error("Erreur lors du chargement du fichier CSV :", err);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
